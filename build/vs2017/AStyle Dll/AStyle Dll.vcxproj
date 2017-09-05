@@ -30,6 +30,7 @@
     <ProjectGuid>{8ECC1E60-2E56-4ACD-96D0-D7F7B11BCEBF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AStyleDll</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -109,7 +110,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\</OutDir>
-    <TargetName>AStyle301</TargetName>
+    <TargetName>AStyle</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static|Win32'">
     <LinkIncremental>false</LinkIncremental>
