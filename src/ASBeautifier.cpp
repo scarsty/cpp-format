@@ -569,7 +569,7 @@ void ASBeautifier::setMinConditionalIndentLength()
 		minConditionalIndent = indentLength / 2;
 	// minConditionalOption = INDENT_TWO
 	else
-		minConditionalIndent = indentLength * 2;
+		minConditionalIndent = indentLength * 1;
 }
 
 /**
@@ -1288,9 +1288,9 @@ void ASBeautifier::registerContinuationIndent(const string& line, int i, int spa
 		int previousIndent = spaceIndentCount_;
 		if (!continuationIndentStack->empty())
 			previousIndent = continuationIndentStack->back();
-		int currIndent = continuationIndent * indentLength + previousIndent;
+        int currIndent = continuationIndent * indentLength + 0;/* previousIndent;*/
 		if (currIndent > maxContinuationIndent && line[i] != '{')
-			currIndent = indentLength * 2 + spaceIndentCount_;
+			currIndent = indentLength * 1 + spaceIndentCount_;
 		continuationIndentStack->emplace_back(currIndent);
 		if (updateParenStack)
 			parenIndentStack->emplace_back(previousIndent);
@@ -1321,7 +1321,7 @@ void ASBeautifier::registerContinuationIndent(const string& line, int i, int spa
 	// this is not done for an in-statement array
 	if (continuationIndentCount > maxContinuationIndent
 	        && !(prevNonLegalCh == '=' && currentNonLegalCh == '{'))
-		continuationIndentCount = indentLength * 2 + spaceIndentCount_;
+		continuationIndentCount = indentLength * 1 + spaceIndentCount_;
 
 	if (!continuationIndentStack->empty()
 	        && continuationIndentCount < continuationIndentStack->back())
