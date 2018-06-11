@@ -4685,7 +4685,7 @@ void ASFormatter::formatOpeningBrace(BraceType braceType)
 		else if ((shouldBreakOneLineBlocks || isBraceType(braceType, BREAK_BLOCK_TYPE))
 		         && !isBraceType(braceType, EMPTY_BLOCK_TYPE))
 			breakLine();
-		else if (!isInLineBreak)
+		else if (!isInLineBreak && previousNonWSChar != '(' && previousNonWSChar != '[')
 			appendSpacePad();
 
 		appendCurrentChar();
@@ -4954,7 +4954,7 @@ void ASFormatter::formatArrayBraces(BraceType braceType, bool isOpeningArrayBrac
 						appendOpeningBrace = true;    // append brace to following line
 					}
 				}
-				if (!isInLineBreak && previousNonWSChar != '(')
+				if (!isInLineBreak && previousNonWSChar != '(' && previousNonWSChar != '[')
 				{
 					// don't space pad C++11 uniform initialization
 					if (!isBraceType(braceType, INIT_TYPE))

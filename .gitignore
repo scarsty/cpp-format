@@ -1,0 +1,12 @@
+*.db
+*.ipch
+*.obj
+*.tlog
+build/vs2017/bin/
+AStyleExtension2017_180611/
+build/vs2017/debug/
+*.zip
+build/vs2017/.vs/
+*.log
+build/vs2017/AStyle Dll/Debug/vc141.pdb
+*.pdb
