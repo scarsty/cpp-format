@@ -1,1 +1,0 @@
---style=allman --indent=spaces=4 --min-conditional-indent=0 --max-continuation-indent=80 --indent-namespaces --indent-after-parens --indent-preproc-define --pad-oper --pad-comma --pad-header --unpad-paren --add-braces --add-one-line-braces --keep-one-line-blocks --keep-one-line-statements --convert-tabs --mode=c
