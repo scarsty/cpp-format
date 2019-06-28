@@ -610,24 +610,53 @@ void WhitespaceManager::alignEscapedNewlines(unsigned Start, unsigned End,
 
 void WhitespaceManager::generateChanges() {
   for (unsigned i = 0, e = Changes.size(); i != e; ++i) {
-    const Change &C = Changes[i];
+    Change &C = Changes[i];
     if (i > 0) {
       assert(Changes[i - 1].OriginalWhitespaceRange.getBegin() !=
                  C.OriginalWhitespaceRange.getBegin() &&
              "Generating two replacements for the same location");
     }
     if (C.CreateReplacement) {
+        bool notnewline = false;
       std::string ReplacementText = C.PreviousLinePostfix;
       if (C.ContinuesPPDirective)
-        appendEscapedNewlineText(ReplacementText, C.NewlinesBefore,
-                                 C.PreviousEndOfTokenColumn,
-                                 C.EscapedNewlineColumn);
+      {
+          //if (C.Tok->Tok.getKind() == tok::TokenKind::l_brace)
+          //{
+              //static Change C0 = C;
+          //}
+          if (C.Tok->NewlinesBefore == 0)
+          {
+              notnewline = 1;
+          }
+          //never new line for macro
+          if (!notnewline)
+          appendEscapedNewlineText(ReplacementText, C.NewlinesBefore,
+              C.PreviousEndOfTokenColumn,
+              C.EscapedNewlineColumn);
+      }
       else
-        appendNewlineText(ReplacementText, C.NewlinesBefore);
+      {
+        //if (C.Tok->Tok.getKind() == tok::TokenKind::l_brace) {
+        //  static Change C0 = C;
+        //}
+        //lambda new line for {
+        int newlinesbefore = std::max(C.NewlinesBefore, C.Tok->NewlinesBefore);
+          appendNewlineText(ReplacementText, newlinesbefore);
+          if (newlinesbefore && C.Spaces==1)
+          {
+              C.Spaces = Style.IndentWidth * C.Tok->IndentLevel;
+          }
+      }
       appendIndentText(ReplacementText, C.Tok->IndentLevel,
                        std::max(0, C.Spaces),
                        C.StartOfTokenColumn - std::max(0, C.Spaces));
       ReplacementText.append(C.CurrentLinePrefix);
+      //never new line for macro
+      if (notnewline)
+      {
+          ReplacementText = " ";
+      }
       storeReplacement(C.OriginalWhitespaceRange, ReplacementText);
     }
   }
