@@ -1,0 +1,1 @@
+copy ..\..\..\llvm\llvm-8.0.0.src\tools\clang\lib\Format\WhitespaceManager.cpp .

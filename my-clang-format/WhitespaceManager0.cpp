@@ -610,74 +610,25 @@ void WhitespaceManager::alignEscapedNewlines(unsigned Start, unsigned End,
 
 void WhitespaceManager::generateChanges() {
   for (unsigned i = 0, e = Changes.size(); i != e; ++i) {
-    Change &C = Changes[i];
+    const Change &C = Changes[i];
     if (i > 0) {
       assert(Changes[i - 1].OriginalWhitespaceRange.getBegin() !=
                  C.OriginalWhitespaceRange.getBegin() &&
              "Generating two replacements for the same location");
     }
     if (C.CreateReplacement) {
-      bool notnewline = false;
       std::string ReplacementText = C.PreviousLinePostfix;
       if (C.ContinuesPPDirective)
-      {
-          //never new line for macro
-          if (C.Tok->NewlinesBefore == 0)
-          {
-              notnewline = true;
-          }
-          if (!notnewline)
-          appendEscapedNewlineText(ReplacementText, C.NewlinesBefore,
-                                   C.PreviousEndOfTokenColumn,
-                                   C.EscapedNewlineColumn);
-      }
+        appendEscapedNewlineText(ReplacementText, C.NewlinesBefore,
+                                 C.PreviousEndOfTokenColumn,
+                                 C.EscapedNewlineColumn);
       else
-      {
-          //lambda new line for {
-          int newlinesbefore = std::max(C.NewlinesBefore, C.Tok->NewlinesBefore);
-          bool insidemacro = false;
-          if (newlinesbefore && C.NewlinesBefore == 0 && C.Tok->TokenText == "{")    // i guess it is a lambda {
-          {
-              for (int i1 = i - 1; i1 >= 0; --i1)
-              {
-                  auto& C1 = Changes[i1];
-                  if (C1.Tok->TokenText == "#")
-                  {
-                      insidemacro = true;
-                      break;
-                  }
-                  if (C1.NewlinesBefore != 0)
-                  {
-                      insidemacro = C1.ContinuesPPDirective;
-                      break;
-                  }
-              }
-              static Change C0 = C;
-              appendNewlineText(ReplacementText, newlinesbefore);
-              if (insidemacro)
-              {
-                  ReplacementText = " \\" + ReplacementText;
-              }
-              if (newlinesbefore && C.Spaces == 1)
-              {
-                  C.Spaces = Style.IndentWidth * C.Tok->IndentLevel;
-              }
-          }
-          else
-          {
-              appendNewlineText(ReplacementText, C.NewlinesBefore);
-          }
-      }
+        appendNewlineText(ReplacementText, C.NewlinesBefore);
       appendIndentText(ReplacementText, C.Tok->IndentLevel,
                        std::max(0, C.Spaces),
                        C.StartOfTokenColumn - std::max(0, C.Spaces));
       ReplacementText.append(C.CurrentLinePrefix);
-      //never new line for macro
-      if (notnewline)
-      {
-          ReplacementText = " ";
-      }
-      storeReplacement(C.OriginalWhitespaceRange, ReplacementText); 
+      storeReplacement(C.OriginalWhitespaceRange, ReplacementText);
     }
   }
 }
