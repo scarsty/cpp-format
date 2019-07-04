@@ -621,15 +621,11 @@ void WhitespaceManager::generateChanges() {
       std::string ReplacementText = C.PreviousLinePostfix;
       if (C.ContinuesPPDirective)
       {
-          //if (C.Tok->Tok.getKind() == tok::TokenKind::l_brace)
-          //{
-              //static Change C0 = C;
-          //}
+          //never new line for macro
           if (C.Tok->NewlinesBefore == 0)
           {
-              notnewline = 1;
+              notnewline = true;
           }
-          //never new line for macro
           if (!notnewline)
           appendEscapedNewlineText(ReplacementText, C.NewlinesBefore,
               C.PreviousEndOfTokenColumn,
@@ -637,16 +633,30 @@ void WhitespaceManager::generateChanges() {
       }
       else
       {
-        //if (C.Tok->Tok.getKind() == tok::TokenKind::l_brace) {
-        //  static Change C0 = C;
-        //}
         //lambda new line for {
         int newlinesbefore = std::max(C.NewlinesBefore, C.Tok->NewlinesBefore);
-          appendNewlineText(ReplacementText, newlinesbefore);
-          if (newlinesbefore && C.Spaces==1)
-          {
-              C.Spaces = Style.IndentWidth * C.Tok->IndentLevel;
-          }
+        bool insidemacro = false;
+        if (newlinesbefore && C.NewlinesBefore == 0)    // it is a lambda {
+        {
+            for (int i1 = i - 1; i1 >= 0; --i1)
+            {
+                auto& C1 = Changes[i1];
+                if (C1.NewlinesBefore != 0 || C1.Tok->NewlinesBefore != 0)
+                {
+                    insidemacro = C1.ContinuesPPDirective;
+                    break;
+                }
+            }
+        }
+        appendNewlineText(ReplacementText, newlinesbefore);
+        if (insidemacro)
+        {
+            ReplacementText = " \\" + ReplacementText;
+        }
+        if (newlinesbefore && C.Spaces==1)
+        {
+            C.Spaces = Style.IndentWidth * C.Tok->IndentLevel;
+        }
       }
       appendIndentText(ReplacementText, C.Tok->IndentLevel,
                        std::max(0, C.Spaces),
@@ -657,7 +667,7 @@ void WhitespaceManager::generateChanges() {
       {
           ReplacementText = " ";
       }
-      storeReplacement(C.OriginalWhitespaceRange, ReplacementText);
+      storeReplacement(C.OriginalWhitespaceRange, ReplacementText); 
     }
   }
 }
