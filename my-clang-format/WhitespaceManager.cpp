@@ -609,27 +609,12 @@ void WhitespaceManager::alignEscapedNewlines(unsigned Start, unsigned End,
 }
 
 void WhitespaceManager::generateChanges() {
-    int inside_template = 0;
-    std::string template_name;
   for (unsigned i = 0, e = Changes.size(); i != e; ++i) {
     Change &C = Changes[i];
     if (i > 0) {
       assert(Changes[i - 1].OriginalWhitespaceRange.getBegin() !=
                  C.OriginalWhitespaceRange.getBegin() &&
              "Generating two replacements for the same location");
-    }
-    if (C.Tok->Type == TokenType::TT_TemplateOpener)
-    {
-        inside_template = 1;
-        if (i > 0)
-        {
-            template_name = Changes[i - 1].Tok->TokenText;
-        }
-    }
-    if (C.Tok->Type == TokenType::TT_TemplateCloser)
-    {
-        inside_template = 0;
-        template_name = "";
     }
     if (C.CreateReplacement) {
       bool notnewline = false;
@@ -677,13 +662,6 @@ void WhitespaceManager::generateChanges() {
               if (newlinesbefore && C.Spaces == 1)
               {
                   C.Spaces = Style.IndentWidth * C.Tok->IndentLevel;
-              }
-          }
-          else if ((C.Tok->TokenText == "&" || C.Tok->TokenText == "*") && C.Tok->Type == TokenType::TT_BinaryOperator)
-          {
-              if (inside_template && template_name == "function")
-              {
-                  //C.Spaces = 0;
               }
           }
           else
