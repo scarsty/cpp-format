@@ -1,3 +1,10 @@
+
+abc = 
+{
+    {1,2},
+    {3,4},
+};
+
 #define WAIT_UNTIL(condition) {{i=0;} }
 #define WAIT_UNTIL_OVERTIME(condition, overtime) \
         { \
